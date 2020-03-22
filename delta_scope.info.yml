@@ -1,0 +1,5 @@
+name: 'Delta Scope'
+type: module
+description: 'Allows to comparison of scope from whats in database and whats not in file'
+package: Custom
+core: 8.x

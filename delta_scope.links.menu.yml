@@ -1,0 +1,5 @@
+content.delta_report:
+  title: 'Delta scope report'
+  description: 'Get log reports about recent scope comparison pre imports'
+  route_name: content.delta_report
+  parent: system.admin_reports

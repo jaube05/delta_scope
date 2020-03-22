@@ -1,0 +1,56 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+/**
+  * @file
+  * Allows site administrators to see comparison between scope in database and scope in file
+  */
+
+function scopeComparison($data){
+
+  //Scopes from file are compared against table taxonomy_term__field_id in database.
+  $comparisonArr = [];
+  $connection = \Drupal::database();
+  $query = $connection->query('SELECT field_id_value AS tid FROM {taxonomy_term__field_id}');
+  $dbResult = $query->fetchAll();
+
+  $comparisonArr['entity_type'] = $data['entity_type'];
+  $comparisonArr['bundle'] = $data['bundle'];
+  $comparisonArr['filename'] = $data['filename'];
+  $comparisonArr['filelogpath'] = $data['filelogpath'];
+
+
+  $fileArr = $data['values'];
+  $fileUUIDArr = Array();
+
+  //Getting uuid values from file array
+  foreach($fileArr as $values){
+    array_push($fileUUIDArr, $values['uuid']);
+  }
+
+  //Convert db object to array
+  $dbTIDArr = json_decode(json_encode($dbResult), true);
+
+  //Getting term id from db array
+  $dbResultArr = [];
+  foreach($dbTIDArr as $values){
+      array_push($dbResultArr, $values['tid']);
+  }
+  $diffResultsArr = array_diff($dbResultArr, $fileUUIDArr);
+
+  $comparisonArr['values'] = $diffResultsArr;
+
+  $operations = [];
+  $operations[] = ['processComparisonBatch', [$comparisonArr]];
+  $batch = [
+    'operations' => $operations,
+    'finished' => 'finishComparisonBatch',
+    'title' => 'Scope Comparison',
+    'init_message' => t('Starting scope comparison import.'),
+    'progress_message' => t('Completed @current step of @total.'),
+    'error_message' => t('Scope comparison has encountered an error.'),
+    'file' => drupal_get_path('module', 'delta_scope') . '/delta_scope.batch.inc',
+  ];
+  batch_set($batch);
+
+}

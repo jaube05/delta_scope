@@ -1,0 +1,14 @@
+content.delta_report:
+  path: '/admin/reports/delta-scope-report'
+  defaults:
+    _controller: '\Drupal\delta_scope\Controller\DeltaScopeLogController::viewReport'
+    _title: 'Delta scope reports'
+  requirements:
+    _permission: 'synchronize content'
+
+content.delta_report_download:
+  path: '/admin/reports/delta-scope-report/{file}'
+  defaults:
+    _controller: '\Drupal\delta_scope\Controller\DeltaScopeDownloadController::downloadReport'
+  requirements:
+    _permission: 'synchronize content'
